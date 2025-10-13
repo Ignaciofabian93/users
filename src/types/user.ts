@@ -1,6 +1,6 @@
 import { type AccountType, type ContactMethod, type SellerType } from "./enums";
 
-export type User = {
+export type Seller = {
   id: string;
   email: string;
   password: string;
@@ -9,18 +9,19 @@ export type User = {
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
-  address: string;
+  address?: string | null;
   cityId?: number | null;
   countryId?: number | null;
   countyId?: number | null;
   regionId?: number | null;
-  phone: string;
+  phone?: string | null;
   website?: string | null;
-  preferredContactMethod: ContactMethod;
+  preferredContactMethod?: ContactMethod | null;
   socialMediaLinks?: any;
-  accountType: AccountType;
-  points: number;
-  userCategoryId?: number | null;
+  accountType?: AccountType | null;
+  points: number | null;
+  sellerCategoryId?: number | null;
+  profile?: PersonProfile | BusinessProfile;
 };
 
 export type PersonProfile = {
@@ -36,7 +37,7 @@ export type PersonProfile = {
   allowExchanges: boolean;
 };
 
-export type StoreProfile = {
+export type BusinessProfile = {
   id: string;
   sellerId: string;
   businessName: string;

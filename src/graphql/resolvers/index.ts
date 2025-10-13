@@ -1,16 +1,16 @@
-import { UserResolver } from "./users";
+import { MainResolver } from "./main";
 
 export const resolvers = {
   Query: {
-    ...UserResolver.Query,
+    ...MainResolver.Query,
   },
   Mutation: {
-    ...UserResolver.Mutation,
+    ...MainResolver.Mutation,
   },
-  User: {
-    ...UserResolver.User,
+  Seller: {
+    ...MainResolver.Seller,
   },
   Profile: {
-    ...UserResolver.Profile,
+    ...MainResolver.Profile,
   },
 };

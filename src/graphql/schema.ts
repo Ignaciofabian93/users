@@ -21,23 +21,43 @@ export const typeDefs = gql`
 
   enum SellerType {
     PERSON
-    STORE
-    SERVICE
+    STARTUP
+    COMPANY
   }
 
-  enum AdminRole {
-    SUPER_ADMIN
-    MODERATOR
-    CONTENT_MANAGER
-    SUPPORT
+  enum BusinessType {
+    RETAIL
+    SERVICES
+    MIXED
   }
 
-  type UserCategory {
+  enum BusinessFormalizationStatus {
+    NOT_REQUIRED
+    PENDING
+    IN_PROGRESS
+    FORMALIZED
+  }
+
+  type SellerCategory {
     id: ID!
     name: String!
     categoryDiscountAmount: Int!
     pointsThreshold: Int!
     level: Int!
+  }
+
+  type SellerPreferences {
+    id: ID!
+    sellerId: String!
+    preferredLanguage: String
+    currency: String
+    emailNotifications: Boolean!
+    pushNotifications: Boolean!
+    orderUpdates: Boolean!
+    communityUpdates: Boolean!
+    securityAlerts: Boolean!
+    weeklySummary: Boolean!
+    twoFactorAuth: Boolean!
   }
 
   type County {
@@ -73,7 +93,7 @@ export const typeDefs = gql`
     allowExchanges: Boolean!
   }
 
-  type StoreProfile {
+  type BusinessProfile {
     id: ID!
     sellerId: String!
     businessName: String!
@@ -81,38 +101,31 @@ export const typeDefs = gql`
     description: String
     logo: String
     coverImage: String
-    businessType: String
+    businessType: BusinessType!
+    legalBusinessName: String
     taxId: String
-    businessRegistration: String
-    allowExchanges: Boolean!
+    businessActivity: String
+    businessStartDate: DateTime
+    legalRepresentative: String
+    legalRepresentativeTaxId: String
+    formalizationStatus: BusinessFormalizationStatus!
+    formalizationDeadline: DateTime
+    formalizationNotes: String
     minOrderAmount: Int
     shippingPolicy: String
     returnPolicy: String
-    businessHours: JSON
-  }
-
-  type ServiceProfile {
-    id: ID!
-    sellerId: String!
-    businessName: String!
-    displayName: String
-    description: String
-    logo: String
-    coverImage: String
-    businessType: String
-    taxId: String
-    businessRegistration: String
-    allowExchanges: Boolean!
-    minOrderAmount: Int
     serviceArea: String
-    serviceHours: JSON
     yearsOfExperience: Int
     licenseNumber: String
     insuranceInfo: String
     certifications: [String!]!
     emergencyService: Boolean!
     travelRadius: Int
-    responsiveness: String
+    businessHours: JSON
+    taxDocuments: [String!]!
+    verificationDocuments: [String!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
   }
 
   type Session {
@@ -126,17 +139,9 @@ export const typeDefs = gql`
   scalar DateTime
   scalar JSON
 
-  union Profile = PersonProfile | StoreProfile | ServiceProfile
+  union Profile = PersonProfile | BusinessProfile
 
-  type Admin @key(fields: "id") {
-    id: ID!
-    email: String!
-    name: String!
-    lastName: String!
-    role: AdminRole!
-  }
-
-  type User @key(fields: "id") {
+  type Seller @key(fields: "id") {
     id: ID!
     email: String!
     sellerType: SellerType!
@@ -155,16 +160,9 @@ export const typeDefs = gql`
     city: City
     region: Region
     country: Country
-    userCategory: UserCategory
+    sellerCategory: SellerCategory
+    preferences: SellerPreferences
     profile: Profile
-  }
-
-  input RegisterAdminInput {
-    email: String!
-    name: String!
-    password: String!
-    lastName: String!
-    role: AdminRole!
   }
 
   input RegisterPersonInput {
@@ -174,18 +172,13 @@ export const typeDefs = gql`
     lastName: String!
   }
 
-  input RegisterStoreInput {
+  input RegisterBusinessInput {
     email: String!
     password: String!
-    businessName: String
-    displayName: String!
-  }
-
-  input RegisterServiceInput {
-    email: String!
-    password: String!
-    businessName: String
-    displayName: String!
+    businessName: String!
+    displayName: String
+    sellerType: SellerType!
+    businessType: BusinessType!
   }
 
   input UpdatePersonProfileInput {
@@ -199,45 +192,50 @@ export const typeDefs = gql`
     allowExchanges: Boolean
   }
 
-  input UpdateStoreProfileInput {
+  input UpdateBusinessProfileInput {
     businessName: String
     displayName: String
     description: String
     logo: String
     coverImage: String
-    businessType: String
+    businessType: BusinessType
+    legalBusinessName: String
     taxId: String
-    businessRegistration: String
-    allowExchanges: Boolean
+    businessActivity: String
+    businessStartDate: DateTime
+    legalRepresentative: String
+    legalRepresentativeTaxId: String
+    formalizationStatus: BusinessFormalizationStatus
+    formalizationDeadline: DateTime
+    formalizationNotes: String
     minOrderAmount: Int
     shippingPolicy: String
     returnPolicy: String
-    businessHours: JSON
-  }
-
-  input UpdateServiceProfileInput {
-    businessName: String
-    displayName: String
-    description: String
-    logo: String
-    coverImage: String
-    businessType: String
-    taxId: String
-    businessRegistration: String
-    allowExchanges: Boolean
-    minOrderAmount: Int
     serviceArea: String
-    serviceHours: JSON
     yearsOfExperience: Int
     licenseNumber: String
     insuranceInfo: String
     certifications: [String!]
     emergencyService: Boolean
     travelRadius: Int
-    responsiveness: String
+    businessHours: JSON
+    taxDocuments: [String!]
+    verificationDocuments: [String!]
   }
 
-  input UpdateUserInput {
+  input UpdateSellerPreferencesInput {
+    preferredLanguage: String
+    currency: String
+    emailNotifications: Boolean
+    pushNotifications: Boolean
+    orderUpdates: Boolean
+    communityUpdates: Boolean
+    securityAlerts: Boolean
+    weeklySummary: Boolean
+    twoFactorAuth: Boolean
+  }
+
+  input UpdateSellerInput {
     email: String
     address: String
     cityId: Int
@@ -254,68 +252,46 @@ export const typeDefs = gql`
   extend type Query {
     # Location queries
     countries: [Country!]!
-    regions(countryId: ID!): [Region!]!
-    cities(regionId: ID!): [City!]!
-    counties(cityId: ID!): [County!]!
+    regionsByCountryId(countryId: ID!): [Region!]!
+    citiesByRegionId(regionId: ID!): [City!]!
+    countiesByCityId(cityId: ID!): [County!]!
 
-    # User queries
-    users(sellerType: SellerType, isActive: Boolean, isVerified: Boolean, limit: Int, offset: Int): [User!]!
-    user(id: ID!): User
-    me: User
+    # Seller queries
+    sellers(sellerType: SellerType, isActive: Boolean, isVerified: Boolean, limit: Int, offset: Int): [Seller!]!
+    seller(id: ID!): Seller
+    me: Seller
 
-    # Store-specific queries
-    stores(isActive: Boolean, isVerified: Boolean, limit: Int, offset: Int): [User!]!
-    storeCatalog: [User!]!
+    # Store queries
 
-    # Service-specific queries
-    services(isActive: Boolean, isVerified: Boolean, limit: Int, offset: Int): [User!]!
-    serviceProviders: [User!]!
+    # Catalog queries
 
     # Categories
-    userCategories: [UserCategory!]!
-    userCategory(id: ID!): UserCategory
+    sellerCategories: [SellerCategory!]!
+    sellerCategory(id: ID!): SellerCategory
   }
 
   extend type Mutation {
     # Registration
-    registerAdmin(input: RegisterAdminInput!): Admin!
-    registerPerson(input: RegisterPersonInput!): User!
-    registerStore(input: RegisterStoreInput!): User!
-    registerService(input: RegisterServiceInput!): User!
+    registerPerson(input: RegisterPersonInput!): Seller!
+    registerBusiness(input: RegisterBusinessInput!): Seller!
 
     # Password management
-    updatePassword(currentPassword: String!, newPassword: String!): User!
+    updatePassword(currentPassword: String!, newPassword: String!): Seller!
     requestPasswordReset(email: String!): Boolean!
-    resetPassword(token: String!, newPassword: String!): User!
 
     # Profile updates
-    updateUser(input: UpdateUserInput!): User!
-    updatePersonProfile(input: UpdatePersonProfileInput!): User!
-    updateStoreProfile(input: UpdateStoreProfileInput!): User!
-    updateServiceProfile(input: UpdateServiceProfileInput!): User!
+    updateSeller(input: UpdateSellerInput!): Seller!
+    updatePersonProfile(input: UpdatePersonProfileInput!): Seller!
+    updateBusinessProfile(input: UpdateBusinessProfileInput!): Seller!
+    updateSellerPreferences(input: UpdateSellerPreferencesInput!): Seller!
 
     # Account management
-    verifyAccount(token: String!): User!
-    resendVerificationEmail: Boolean!
-    deactivateAccount: User!
-    reactivateAccount: User!
-    deleteAccount(password: String!): Boolean!
+    deactivateAccount: Seller!
+    reactivateAccount: Seller!
 
     # Points and category management
-    addPoints(userId: ID!, points: Int!): User!
-    deductPoints(userId: ID!, points: Int!): User!
-    updateUserCategory(userId: ID!, categoryId: ID!): User!
-
-    # Admin mutations
-    adminCreateUser(email: String!, sellerType: SellerType!, isVerified: Boolean): User!
-    adminUpdateUser(
-      userId: ID!
-      isActive: Boolean
-      isVerified: Boolean
-      accountType: AccountType
-      points: Int
-      userCategoryId: Int
-    ): User!
-    adminDeleteUser(userId: ID!): Boolean!
+    addPoints(id: ID!, points: Int!): Seller!
+    deductPoints(id: ID!, points: Int!): Seller!
+    updateSellerCategory(id: ID!, categoryId: ID!): Seller!
   }
 `;
