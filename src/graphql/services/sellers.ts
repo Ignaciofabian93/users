@@ -77,6 +77,8 @@ export const SellerService = {
       if (!sellerId) {
         throw new ErrorService.UnAuthorizedError("No autorizado");
       }
+      console.log("seller id in getMe:", sellerId);
+
       const sellerType = await prisma.seller.findUnique({
         where: { id: sellerId },
         select: { sellerType: true },

@@ -3,6 +3,49 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
 
+  enum AdminRole {
+    SUPER_ADMIN
+    MODERATOR
+    CONTENT_MANAGER
+    SUPPORT
+    BUSINESS_OWNER
+    BUSINESS_MANAGER
+    BUSINESS_ANALYST
+    BUSINESS_SUPPORT
+  }
+
+  enum AdminPermission {
+    MANAGE_PRODUCTS
+    APPROVE_PRODUCTS
+    DELETE_PRODUCTS
+    WRITE_BLOG
+    PUBLISH_BLOG
+    DELETE_BLOG
+    MODERATE_CONTENT
+    MANAGE_USERS
+    BAN_USERS
+    VIEW_USER_DATA
+    MANAGE_ORDERS
+    PROCESS_REFUNDS
+    VIEW_TRANSACTIONS
+    VIEW_ANALYTICS
+    EXPORT_DATA
+    MANAGE_ADMINS
+    MANAGE_CATEGORIES
+    MANAGE_SETTINGS
+    VIEW_SYSTEM_LOGS
+    MANAGE_BUSINESS_PROFILE
+    MANAGE_BUSINESS_TEAM
+    VIEW_BUSINESS_ANALYTICS
+    MANAGE_BUSINESS_PRODUCTS
+    MANAGE_BUSINESS_ORDERS
+  }
+
+  enum AdminType {
+    PLATFORM
+    BUSINESS
+  }
+
   enum AccountType {
     FREE
     PLUS
@@ -36,6 +79,50 @@ export const typeDefs = gql`
     PENDING
     IN_PROGRESS
     FORMALIZED
+  }
+
+  type Admin @key(fields: "id") {
+    id: ID!
+    email: String!
+    password: String!
+    name: String!
+    lastName: String
+    adminType: AdminType!
+    role: AdminRole!
+    permissions: [AdminPermission!]!
+    sellerId: String
+    isActive: Boolean!
+    isEmailVerified: Boolean!
+    accountLocked: Boolean!
+    loginAttempts: Int!
+    lastLoginAt: DateTime
+    lastLoginIp: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    cityId: Int
+    countryId: Int
+    countyId: Int
+    regionId: Int
+    # Relations
+    city: City
+    country: Country
+    county: County
+    region: Region
+    seller: Seller
+    activityLogs: [AdminActivityLog!]!
+  }
+
+  type AdminActivityLog {
+    id: ID!
+    adminId: String!
+    action: String!
+    entityType: String
+    entityId: String
+    changes: JSON
+    ipAddress: String
+    userAgent: String
+    metadata: JSON
+    createdAt: DateTime!
   }
 
   type SellerCategory {
