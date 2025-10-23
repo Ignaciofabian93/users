@@ -4,9 +4,11 @@ import { LocationService } from "../services/location";
 export const LocationResolver = {
   Query: {
     countries: (_parent: unknown, _args: unknown, context: Context) => LocationService.getCountries(context),
-    regions: (_parent: unknown, _args: { countryId: number }, context: Context) =>
+    regionsByCountryId: (_parent: unknown, _args: { countryId: number }, context: Context) =>
       LocationService.getRegionsByCountry(_args.countryId, context),
-    cities: (_parent: unknown, _args: { regionId: number }, context: Context) => LocationService.getCitiesByRegion(_args.regionId, context),
-    counties: (_parent: unknown, _args: { cityId: number }, context: Context) => LocationService.getCountiesByCity(_args.cityId, context),
+    citiesByRegionId: (_parent: unknown, _args: { regionId: number }, context: Context) =>
+      LocationService.getCitiesByRegion(_args.regionId, context),
+    countiesByCityId: (_parent: unknown, _args: { cityId: number }, context: Context) =>
+      LocationService.getCountiesByCity(_args.cityId, context),
   },
 };

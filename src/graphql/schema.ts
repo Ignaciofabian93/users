@@ -184,33 +184,22 @@ export const typeDefs = gql`
     id: ID!
     sellerId: String!
     businessName: String!
-    displayName: String
     description: String
     logo: String
     coverImage: String
     businessType: BusinessType!
     legalBusinessName: String
     taxId: String
-    businessActivity: String
     businessStartDate: DateTime
     legalRepresentative: String
     legalRepresentativeTaxId: String
-    formalizationStatus: BusinessFormalizationStatus!
-    formalizationDeadline: DateTime
-    formalizationNotes: String
-    minOrderAmount: Int
     shippingPolicy: String
     returnPolicy: String
     serviceArea: String
     yearsOfExperience: Int
-    licenseNumber: String
-    insuranceInfo: String
     certifications: [String!]!
-    emergencyService: Boolean!
     travelRadius: Int
     businessHours: JSON
-    taxDocuments: [String!]!
-    verificationDocuments: [String!]!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -241,7 +230,6 @@ export const typeDefs = gql`
     website: String
     preferredContactMethod: ContactMethod
     socialMediaLinks: JSON
-    accountType: AccountType!
     points: Int!
     county: County
     city: City
@@ -281,33 +269,22 @@ export const typeDefs = gql`
 
   input UpdateBusinessProfileInput {
     businessName: String
-    displayName: String
     description: String
     logo: String
     coverImage: String
     businessType: BusinessType
     legalBusinessName: String
     taxId: String
-    businessActivity: String
     businessStartDate: DateTime
     legalRepresentative: String
     legalRepresentativeTaxId: String
-    formalizationStatus: BusinessFormalizationStatus
-    formalizationDeadline: DateTime
-    formalizationNotes: String
-    minOrderAmount: Int
     shippingPolicy: String
     returnPolicy: String
     serviceArea: String
     yearsOfExperience: Int
-    licenseNumber: String
-    insuranceInfo: String
     certifications: [String!]
-    emergencyService: Boolean
     travelRadius: Int
     businessHours: JSON
-    taxDocuments: [String!]
-    verificationDocuments: [String!]
   }
 
   input UpdateSellerPreferencesInput {
@@ -348,10 +325,6 @@ export const typeDefs = gql`
     seller(id: ID!): Seller
     me: Seller
 
-    # Store queries
-
-    # Catalog queries
-
     # Categories
     sellerCategories: [SellerCategory!]!
     sellerCategory(id: ID!): SellerCategory
@@ -368,9 +341,9 @@ export const typeDefs = gql`
 
     # Profile updates
     updateSeller(input: UpdateSellerInput!): Seller!
-    updatePersonProfile(input: UpdatePersonProfileInput!): Seller!
-    updateBusinessProfile(input: UpdateBusinessProfileInput!): Seller!
-    updateSellerPreferences(input: UpdateSellerPreferencesInput!): Seller!
+    updatePersonProfile(input: UpdatePersonProfileInput!): PersonProfile!
+    updateBusinessProfile(input: UpdateBusinessProfileInput!): BusinessProfile!
+    updateSellerPreferences(input: UpdateSellerPreferencesInput!): SellerPreferences!
 
     # Account management
     deactivateAccount: Seller!

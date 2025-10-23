@@ -132,7 +132,7 @@ export const SellerService = {
         include: {
           businessProfile: {
             where: {
-              businessActivity: { in: ["RETAIL", "MIXED"] },
+              businessType: { in: ["RETAIL", "MIXED"] },
             },
           },
           country: true,
@@ -161,7 +161,7 @@ export const SellerService = {
         include: {
           businessProfile: {
             where: {
-              businessActivity: { in: ["RETAIL", "MIXED"] },
+              businessType: { in: ["RETAIL", "MIXED"] },
             },
           },
         },
@@ -281,7 +281,6 @@ export const SellerService = {
           data: {
             sellerId: user.id,
             businessName,
-            displayName,
             updatedAt: new Date(),
             businessType,
           },
@@ -311,14 +310,18 @@ export const SellerService = {
       const result: Seller = await prisma.seller.update({
         where: { id: sellerId },
         data: input,
+        include: {
+          country: true,
+          region: true,
+          city: true,
+          county: true,
+          sellerCategory: true,
+        },
       });
 
       return result;
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
-      if (error instanceof ErrorService.BadRequestError) {
-        throw error;
-      }
       throw new ErrorService.InternalServerError("Error al actualizar usuario");
     }
   },
@@ -353,6 +356,8 @@ export const SellerService = {
 
   updateBusinessProfile: async ({ sellerId, input }: { input: UpdateBusinessProfileInput } & Context) => {
     try {
+      console.log("Input to updateBusinessProfile:", input);
+
       if (!sellerId) {
         throw new ErrorService.UnAuthorizedError("No autorizado");
       }
@@ -360,6 +365,7 @@ export const SellerService = {
         where: { sellerId },
         data: input,
       });
+      console.log("Updated business profile:", business);
 
       return business;
     } catch (error) {

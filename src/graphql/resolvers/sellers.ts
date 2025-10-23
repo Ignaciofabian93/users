@@ -53,33 +53,22 @@ export type UpdatePersonProfileInput = {
 
 export type UpdateBusinessProfileInput = {
   businessName: string;
-  displayName: string;
   description: string;
   logo: string;
   coverImage: string;
   businessType: BusinessType;
   legalBusinessName: string;
   taxId: string;
-  businessActivity: string;
   businessStartDate: Date;
   legalRepresentative: string;
   legalRepresentativeTaxId: string;
-  formalizationStatus: BusinessFormalizationStatus;
-  formalizationDeadline: Date;
-  formalizationNotes: string;
-  minOrderAmount: number;
   shippingPolicy: string;
   returnPolicy: string;
   serviceArea: string;
   yearsOfExperience: number;
-  licenseNumber: string;
-  insuranceInfo: string;
   certifications: string[];
-  emergencyService: boolean;
   travelRadius: number;
   businessHours: string;
-  taxDocuments: string[];
-  verificationDocuments: string[];
 };
 
 export const SellerResolver = {
