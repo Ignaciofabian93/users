@@ -7,6 +7,9 @@ export const resolvers = {
   Mutation: {
     ...MainResolver.Mutation,
   },
+  Admin: {
+    ...MainResolver.Admin,
+  },
   Seller: {
     ...MainResolver.Seller,
   },

@@ -16,6 +16,10 @@ export const MainResolver = {
     ...AccountResolver.Mutation,
   },
 
+  Admin: {
+    __resolveReference: (reference: { id: string }) => ReferenceService.adminReference({ id: reference.id }),
+  },
+
   Seller: {
     __resolveReference: (reference: { id: string }) => ReferenceService.sellerReference({ id: reference.id }),
     profile: (parent: any) => {
