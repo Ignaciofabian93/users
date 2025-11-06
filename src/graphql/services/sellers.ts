@@ -35,7 +35,7 @@ export const SellerService = {
           region: true,
           city: true,
           county: true,
-          sellerCategory: true,
+          sellerLevel: true,
         },
         orderBy: { createdAt: "desc" },
         take: limit || undefined,
@@ -62,7 +62,7 @@ export const SellerService = {
           region: true,
           city: true,
           county: true,
-          sellerCategory: true,
+          sellerLevel: true,
         },
       });
       return user;
@@ -77,8 +77,6 @@ export const SellerService = {
       if (!sellerId) {
         throw new ErrorService.UnAuthorizedError("No autorizado");
       }
-      console.log("seller id in getMe:", sellerId);
-
       const sellerType = await prisma.seller.findUnique({
         where: { id: sellerId },
         select: { sellerType: true },
@@ -93,7 +91,7 @@ export const SellerService = {
             region: true,
             city: true,
             county: true,
-            sellerCategory: true,
+            sellerLevel: true,
           },
         });
 
@@ -107,7 +105,7 @@ export const SellerService = {
             region: true,
             city: true,
             county: true,
-            sellerCategory: true,
+            sellerLevel: true,
           },
         });
         return businessProfile;
@@ -139,7 +137,7 @@ export const SellerService = {
           region: true,
           city: true,
           county: true,
-          sellerCategory: true,
+          sellerLevel: true,
         },
         orderBy: { createdAt: "desc" },
         take: limit || undefined,
@@ -176,8 +174,8 @@ export const SellerService = {
   // User categories
   getUserCategories: async () => {
     try {
-      const categories = await prisma.sellerCategory.findMany({
-        orderBy: { level: "asc" },
+      const categories = await prisma.sellerLevel.findMany({
+        orderBy: { levelName: "asc" },
       });
       return categories;
     } catch (error) {
@@ -188,7 +186,7 @@ export const SellerService = {
 
   getUserCategory: async ({ id }: { id: string }) => {
     try {
-      const category = await prisma.sellerCategory.findUnique({
+      const category = await prisma.sellerLevel.findUnique({
         where: { id: Number(id) },
       });
       return category;
@@ -315,7 +313,7 @@ export const SellerService = {
           region: true,
           city: true,
           county: true,
-          sellerCategory: true,
+          sellerLevel: true,
         },
       });
 
@@ -356,8 +354,6 @@ export const SellerService = {
 
   updateBusinessProfile: async ({ sellerId, input }: { input: UpdateBusinessProfileInput } & Context) => {
     try {
-      console.log("Input to updateBusinessProfile:", input);
-
       if (!sellerId) {
         throw new ErrorService.UnAuthorizedError("No autorizado");
       }
@@ -365,8 +361,6 @@ export const SellerService = {
         where: { sellerId },
         data: input,
       });
-      console.log("Updated business profile:", business);
-
       return business;
     } catch (error) {
       console.error("Error al actualizar perfil de tienda:", error);
