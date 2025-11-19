@@ -23,9 +23,20 @@ export const MainResolver = {
   Seller: {
     __resolveReference: (reference: { id: string }) => ReferenceService.sellerReference({ id: reference.id }),
     profile: (parent: any) => {
-      // Return personProfile or businessProfile depending on which exists
-      return parent.personProfile || parent.businessProfile || null;
+      // Return the correct profile with __typename
+      if (parent.sellerType === "PERSON" && parent.personProfile) {
+        return { ...parent.personProfile, __typename: "PersonProfile" };
+      }
+      if ((parent.sellerType === "STARTUP" || parent.sellerType === "COMPANY") && parent.businessProfile) {
+        return { ...parent.businessProfile, __typename: "BusinessProfile" };
+      }
+      return null;
     },
+    country: (parent: any) => parent.country || null,
+    region: (parent: any) => parent.region || null,
+    city: (parent: any) => parent.city || null,
+    county: (parent: any) => parent.county || null,
+    sellerLevel: (parent: any) => parent.sellerLevel || null,
   },
   Profile: {
     __resolveType(obj: any) {

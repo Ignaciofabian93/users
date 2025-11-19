@@ -125,12 +125,15 @@ export const typeDefs = gql`
     createdAt: DateTime!
   }
 
-  type SellerCategory {
+  type SellerLevel {
     id: ID!
-    name: String!
-    categoryDiscountAmount: Int!
-    pointsThreshold: Int!
-    level: Int!
+    levelName: String!
+    minPoints: Int!
+    maxPoints: Int
+    benefits: JSON
+    badgeIcon: String
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type SellerPreferences {
@@ -235,7 +238,7 @@ export const typeDefs = gql`
     city: City
     region: Region
     country: Country
-    sellerCategory: SellerCategory
+    sellerLevel: SellerLevel
     preferences: SellerPreferences
     profile: Profile
   }
@@ -326,8 +329,8 @@ export const typeDefs = gql`
     me: Seller
 
     # Categories
-    sellerCategories: [SellerCategory!]!
-    sellerCategory(id: ID!): SellerCategory
+    sellerLevels: [SellerLevel!]!
+    sellerLevel(id: ID!): SellerLevel
   }
 
   extend type Mutation {

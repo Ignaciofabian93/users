@@ -72,6 +72,28 @@ export const SellerService = {
     }
   },
 
+  // Federation reference resolver - no auth required
+  getSellerByIdForReference: async ({ id }: { id: string }) => {
+    try {
+      const seller = await prisma.seller.findUnique({
+        where: { id },
+        include: {
+          personProfile: true,
+          businessProfile: true,
+          country: true,
+          region: true,
+          city: true,
+          county: true,
+          sellerLevel: true,
+        },
+      });
+      return seller;
+    } catch (error) {
+      console.error("Error al obtener seller para federación:", error);
+      return null;
+    }
+  },
+
   getMe: async ({ sellerId }: Context) => {
     try {
       if (!sellerId) {

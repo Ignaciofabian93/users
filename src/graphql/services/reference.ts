@@ -38,16 +38,39 @@ export const ReferenceService = {
 
   sellerReference: async ({ id }: { id: string }) => {
     try {
+      console.log("[SellerReference] Fetching seller reference for ID:", id);
       const seller = await prisma.seller.findUnique({
         where: { id },
+        include: {
+          personProfile: true,
+          businessProfile: true,
+          country: true,
+          region: true,
+          city: true,
+          county: true,
+          sellerLevel: true,
+        },
       });
+
       if (!seller) {
-        throw new ErrorService.NotFoundError("Usuario no encontrado");
+        console.warn("[SellerReference] Seller not found for ID:", id);
+        return null;
       }
+
+      console.log("[SellerReference] Seller found:", {
+        id: seller.id,
+        email: seller.email,
+        sellerType: seller.sellerType,
+        hasPersonProfile: !!seller.personProfile,
+        hasBusinessProfile: !!seller.businessProfile,
+        hasCountry: !!seller.country,
+        hasCity: !!seller.city,
+      });
+
       return seller;
     } catch (error) {
-      console.error("Error fetching seller by ID:", error);
-      throw new ErrorService.InternalServerError("Error al obtener el usuario por ID");
+      console.error("[SellerReference] Error fetching seller by ID:", id, error);
+      return null;
     }
   },
 };
